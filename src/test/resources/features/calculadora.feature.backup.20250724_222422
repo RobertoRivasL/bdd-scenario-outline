@@ -1,0 +1,48 @@
+#language: es
+@calculadora
+Característica: Funcionalidad de Calculadora
+  Como estudiante de automatización de pruebas
+  Quiero probar diferentes operaciones matemáticas
+  Para verificar que la calculadora funciona correctamente
+
+  Antecedentes:
+    Dado que estoy en la página de la calculadora
+
+  @operaciones-basicas
+  Esquema del escenario: Realizar operaciones matemáticas básicas
+    Cuando ingreso el primer número <numero1>
+    Y ingreso el segundo número <numero2>
+    Y hago clic en el botón de <operacion>
+    Entonces el resultado debe ser <resultado_esperado>
+
+    Ejemplos:
+      | numero1 | numero2 | operacion      | resultado_esperado |
+      | 10      | 5       | suma           | 15                 |
+      | 20      | 8       | resta          | 12                 |
+      | 7       | 6       | multiplicacion | 42                 |
+      | 15      | 3       | division       | 5                  |
+
+  @numeros-decimales
+  Esquema del escenario: Operaciones con números decimales
+    Cuando ingreso el primer número <numero1>
+    Y ingreso el segundo número <numero2>
+    Y hago clic en el botón de <operacion>
+    Entonces el resultado debe ser aproximadamente <resultado_esperado>
+
+    Ejemplos:
+      | numero1 | numero2 | operacion      | resultado_esperado |
+      | 2.5     | 1.5     | suma           | 4                  |
+      | 10.75   | 2.25    | resta          | 8.5                |
+      | 3.14    | 2       | multiplicacion | 6.28               |
+      | 22.5    | 4.5     | division       | 5                  |
+
+  @casos-especiales
+  Esquema del escenario: Validar casos especiales
+    Cuando ingreso el primer número <numero1>
+    Y ingreso el segundo número <numero2>
+    Y hago clic en el botón de <operacion>
+    Entonces debe mostrar el mensaje de error "<mensaje_error>"
+
+    Ejemplos:
+      | numero1 | numero2 | operacion | mensaje_error                |
+      | 10      | 0       | division  | No se puede dividir por cero |

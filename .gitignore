@@ -1,0 +1,29 @@
+# Maven
+target/
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.eclipse/
+.settings/
+.project
+.classpath
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Drivers
+src/test/resources/drivers/
+
+# Reports
+cucumber-reports/
+allure-results/
+screenshots/
+logs/
+
+# Misc
+*.tmp
+*.bak
