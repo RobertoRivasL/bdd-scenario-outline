@@ -116,6 +116,17 @@
             font-weight: 400;
         }
 
+        /* Importante: Permitir números negativos */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
         .operations-section {
             display: grid;
             gap: 16px;
@@ -302,6 +313,21 @@
             100% { transform: scale(1); }
         }
 
+        /* Mensaje de soporte para números negativos */
+        .negative-numbers-info {
+            margin-top: 16px;
+            padding: 12px;
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-radius: 12px;
+            border-left: 4px solid #28a745;
+            font-size: 14px;
+            color: #155724;
+        }
+
+        .negative-numbers-info strong {
+            color: #0f5132;
+        }
+
         /* Responsive Design */
         @media (max-width: 480px) {
             .calculator-container {
@@ -327,15 +353,6 @@
                 font-size: 28px;
             }
         }
-
-        /* Accessibility */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
     </style>
 </head>
 <body>
@@ -353,12 +370,16 @@
                 <div class="input-row">
                     <div class="input-field">
                         <label for="numero1">Primer número</label>
-                        <input type="number" id="numero1" placeholder="0" data-testid="numero1" step="any">
+                        <input type="number" id="numero1" placeholder="0" data-testid="numero1" step="any" min="-999999" max="999999">
                     </div>
                     <div class="input-field">
                         <label for="numero2">Segundo número</label>
-                        <input type="number" id="numero2" placeholder="0" data-testid="numero2" step="any">
+                        <input type="number" id="numero2" placeholder="0" data-testid="numero2" step="any" min="-999999" max="999999">
                     </div>
+                </div>
+                
+                <div class="negative-numbers-info">
+                    <strong>💡 Soporte completo:</strong> Esta calculadora acepta números negativos, decimales y enteros. Ejemplos: -15, 3.14, -7.5
                 </div>
             </div>
 
@@ -395,7 +416,7 @@
 
             <div class="testing-info">
                 <h3>Para Testing con Scenario Outline</h3>
-                <p>Esta aplicación incluye <strong>data-testid</strong> para facilitar la automatización con <strong>Selenium + Cucumber</strong>. Los escenarios pueden probar múltiples combinaciones usando tablas de ejemplos.</p>
+                <p>Esta aplicación incluye <strong>data-testid</strong> para facilitar la automatización con <strong>Selenium + Cucumber</strong>. Los escenarios pueden probar múltiples combinaciones usando tablas de ejemplos con <strong>números positivos, negativos y decimales</strong>.</p>
             </div>
         </div>
     </div>
@@ -404,17 +425,29 @@
         let ultimaOperacion = null;
 
         function obtenerNumeros() {
-            const num1 = parseFloat(document.getElementById('numero1').value);
-            const num2 = parseFloat(document.getElementById('numero2').value);
+            const valor1 = document.getElementById('numero1').value.trim();
+            const valor2 = document.getElementById('numero2').value.trim();
             
+            // Validación mejorada para números negativos
+            if (valor1 === '' || valor2 === '') {
+                return null;
+            }
+            
+            const num1 = parseFloat(valor1);
+            const num2 = parseFloat(valor2);
+            
+            // Verificar que son números válidos (incluyendo negativos)
             if (isNaN(num1) || isNaN(num2)) {
                 return null;
             }
             
+            console.log(`📊 Números obtenidos: num1=${num1}, num2=${num2}`);
             return { num1, num2 };
         }
 
         function calcular(operacion) {
+            console.log(`🔧 Iniciando cálculo: ${operacion}`);
+            
             const numeros = obtenerNumeros();
             
             if (!numeros) {
@@ -465,11 +498,12 @@
                     expresion: `${num1} ${simbolo} ${num2}`
                 };
 
+                console.log(`✅ Cálculo completado: ${ultimaOperacion.expresion} = ${resultado}`);
                 mostrarResultado(resultado, ultimaOperacion.expresion);
                 
             } catch (error) {
+                console.error('❌ Error en cálculo:', error);
                 mostrarError("Error en el cálculo");
-                console.error('Error en cálculo:', error);
             }
         }
 
@@ -486,6 +520,8 @@
             setTimeout(() => {
                 document.querySelector('.result').classList.remove('success-animation');
             }, 600);
+            
+            console.log(`📱 Resultado mostrado: ${valor}`);
         }
 
         function mostrarError(mensaje) {
@@ -495,6 +531,8 @@
             resultadoElement.textContent = mensaje;
             operacionElement.textContent = "Error";
             resultadoElement.className = 'result-value error';
+            
+            console.log(`❌ Error mostrado: ${mensaje}`);
         }
 
         function limpiar() {
@@ -507,6 +545,8 @@
             
             // Enfocar el primer input
             document.getElementById('numero1').focus();
+            
+            console.log('🧹 Calculadora limpiada');
         }
 
         // Soporte para teclado
@@ -529,8 +569,11 @@
                     calcular('suma');
                     break;
                 case '-':
-                    e.preventDefault();
-                    calcular('resta');
+                    // Solo prevenir si no estamos en un input (para permitir números negativos)
+                    if (document.activeElement.tagName !== 'INPUT') {
+                        e.preventDefault();
+                        calcular('resta');
+                    }
                     break;
                 case '*':
                     e.preventDefault();
@@ -546,20 +589,41 @@
         // Auto-focus en el primer campo al cargar
         window.addEventListener('load', function() {
             document.getElementById('numero1').focus();
+            console.log('🚀 Calculadora cargada - Soporte para números negativos habilitado');
         });
 
-        // Validación en tiempo real
+        // Validación en tiempo real mejorada
         document.getElementById('numero1').addEventListener('input', validarEntrada);
         document.getElementById('numero2').addEventListener('input', validarEntrada);
 
         function validarEntrada(e) {
             const valor = e.target.value;
-            if (valor && isNaN(parseFloat(valor))) {
-                e.target.style.borderColor = '#fc8181';
-            } else {
+            
+            // Permitir campo vacío, números positivos, negativos y decimales
+            if (valor === '' || valor === '-' || !isNaN(parseFloat(valor))) {
                 e.target.style.borderColor = '#e2e8f0';
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+            } else {
+                e.target.style.borderColor = '#fc8181';
+                e.target.style.backgroundColor = 'rgba(252, 129, 129, 0.1)';
             }
         }
+
+        // Debug: Función para probar números negativos desde consola
+        window.testNegativeNumbers = function() {
+            console.log('🧪 Probando números negativos:');
+            
+            // Simular entrada de números negativos
+            document.getElementById('numero1').value = '-10';
+            document.getElementById('numero2').value = '5';
+            calcular('suma');
+            
+            setTimeout(() => {
+                document.getElementById('numero1').value = '-7';
+                document.getElementById('numero2').value = '6';
+                calcular('multiplicacion');
+            }, 2000);
+        };
     </script>
 </body>
 </html>

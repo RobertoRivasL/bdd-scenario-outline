@@ -15,15 +15,32 @@ target/
 .DS_Store
 Thumbs.db
 
-# Drivers
+# Drivers (WebDriverManager los descarga automáticamente)
 src/test/resources/drivers/
 
-# Reports
+# Reports (se generan automáticamente)
 cucumber-reports/
 allure-results/
+allure-report/
 screenshots/
 logs/
 
-# Misc
+# Temporary files
 *.tmp
 *.bak
+*.swp
+*~
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# Maven wrapper (opcional)
+.mvn/
+mvnw
+mvnw.cmd

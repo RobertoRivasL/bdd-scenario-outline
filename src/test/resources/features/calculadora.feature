@@ -38,6 +38,24 @@ Característica: Funcionalidad de Calculadora
       | 3.14    | 2       | multiplicacion | 6.28               |
       | 22.5    | 4.5     | division       | 5                  |
 
+  @numeros-negativos
+  Esquema del escenario: Operaciones con números negativos
+    Cuando ingreso el primer número <numero1>
+    Y ingreso el segundo número <numero2>
+    Y hago clic en el botón de <operacion>
+    Entonces el resultado debe ser exactamente <resultado_esperado>
+
+    Ejemplos:
+      | numero1 | numero2 | operacion      | resultado_esperado |
+      | -10     | 5       | suma           | -5                 |
+      | -20     | -8      | resta          | -12                |
+      | -7      | 6       | multiplicacion | -42                |
+      | -15     | -3      | division       | 5                  |
+      | 10      | -5      | suma           | 5                  |
+      | 20      | -8      | resta          | 28                 |
+      | -12     | 3       | multiplicacion | -36                |
+      | 18      | -6      | division       | -3                 |
+
   @casos-especiales
   Esquema del escenario: Validar casos especiales
     Cuando ingreso el primer número <numero1>
@@ -48,6 +66,7 @@ Característica: Funcionalidad de Calculadora
     Ejemplos:
       | numero1 | numero2 | operacion | mensaje_error                |
       | 10      | 0       | division  | No se puede dividir por cero |
+      | -5      | 0       | division  | No se puede dividir por cero |
 
   @funcionalidad-limpiar
   Escenario: Validar funcionalidad de limpiar

@@ -10,21 +10,42 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>Calculadora - Demo Scenario Outline</name>
-    <description>Proyecto con reportes estables y screenshots automáticos</description>
+    <name>Calculadora - Automatización con Principios SOLID</name>
+    <description>Configuración DEFINITIVA que funciona - basada en documentación oficial</description>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <!-- Java 17 -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
-        <!-- Versiones ESTABLES verificadas -->
-        <cucumber.version>7.15.0</cucumber.version>
-        <selenium.version>4.15.0</selenium.version>
-        <junit.version>5.10.0</junit.version>
+        <!-- VERSIONES REALES QUE EXISTEN - PROBADAS -->
+        <cucumber.version>7.14.0</cucumber.version>
+        <selenium.version>4.13.0</selenium.version>
+        <junit.version>5.9.3</junit.version>
         <allure.version>2.24.0</allure.version>
-        <webdrivermanager.version>5.5.3</webdrivermanager.version>
+        <aspectj.version>1.9.20.1</aspectj.version>
+        <webdrivermanager.version>5.4.1</webdrivermanager.version>
+        
+        <!-- Plugins -->
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.surefire.plugin.version>3.1.2</maven.surefire.plugin.version>
+        <allure.maven.version>2.12.0</allure.maven.version>
     </properties>
+
+    <!-- GESTIÓN DE DEPENDENCIAS CON ALLURE-BOM (Recomendado por Allure) -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-bom</artifactId>
+                <version>${allure.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- Cucumber Core -->
@@ -62,32 +83,41 @@
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-suite</artifactId>
-            <version>1.10.0</version>
+            <version>1.9.3</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- Allure Reporting (ESTABLE) -->
+        <!-- ALLURE CON BOM - SIN VERSIONES (las maneja el BOM) -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-cucumber7-jvm</artifactId>
-            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit-platform</artifactId>
+            <scope>test</scope>
         </dependency>
 
-        <!-- Screenshots y utilidades -->
+        <!-- AspectJ para Allure -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Utilidades -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
         </dependency>
-
-        <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>2.0.9</version>
+            <version>1.7.36</version>
         </dependency>
-
-        <!-- AssertJ para assertions mejoradas -->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
@@ -98,69 +128,52 @@
 
     <build>
         <plugins>
-            <!-- Compiler Plugin -->
+            <!-- Compiler Plugin para Java 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>17</source>
+                    <target>17</target>
+                    <release>17</release>
                     <encoding>UTF-8</encoding>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 
-            <!-- Surefire Plugin -->
+            <!-- Surefire Plugin con AspectJ -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>${maven.surefire.plugin.version}</version>
                 <configuration>
-                    <properties>
-                        <configurationParameters>
-                            junit.platform.output.capture.stdout=true
-                            junit.platform.output.capture.stderr=true
-                        </configurationParameters>
-                    </properties>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
                     <systemPropertyVariables>
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
                     </systemPropertyVariables>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
-            <!-- Allure Plugin -->
+            <!-- Allure Maven Plugin -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
-                <version>2.12.0</version>
+                <version>${allure.maven.version}</version>
                 <configuration>
                     <reportVersion>${allure.version}</reportVersion>
                 </configuration>
-            </plugin>
-
-            <!-- Cucumber Reporting Plugin (ESTABLE) -->
-            <plugin>
-                <groupId>net.masterthought</groupId>
-                <artifactId>maven-cucumber-reporting</artifactId>
-                <version>5.7.5</version>
-                <executions>
-                    <execution>
-                        <id>execution</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <projectName>Calculadora - Scenario Outline</projectName>
-                            <outputDirectory>${project.build.directory}/cucumber-html-reports</outputDirectory>
-                            <inputDirectory>${project.build.directory}/cucumber-reports</inputDirectory>
-                            <jsonFiles>
-                                <param>**/*.json</param>
-                            </jsonFiles>
-                            <checkBuildResult>false</checkBuildResult>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
